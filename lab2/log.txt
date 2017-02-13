@@ -1,0 +1,46 @@
+make -C /usr/src/linux M=/root/s07/class2 modules
+make[1]: Entering directory `/usr/src/kernels/3.10.0-327.el7.x86_64'
+  CC [M]  /root/s07/class2/mymod.o
+/root/s07/class2/mymod.c: In function ‘kyuoko3_probe’:
+/root/s07/class2/mymod.c:42:2: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  int rc = pci_enable_device(pci_device);
+  ^
+/root/s07/class2/mymod.c: In function ‘kyouko3_open’:
+/root/s07/class2/mymod.c:81:3: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+   int ram_size = K_READ_REG(Device_RAM);
+   ^
+In file included from include/linux/mm.h:46:0,
+                 from /usr/src/kernels/3.10.0-327.el7.x86_64/arch/x86/include/asm/pci.h:4,
+                 from include/linux/pci.h:1449,
+                 from /root/s07/class2/mymod.c:7:
+/root/s07/class2/mymod.c: In function ‘kyuoko3_mmap’:
+/root/s07/class2/mymod.c:104:70: error: expected ‘)’ before ‘:’ token
+  ret = io_remap_pfn_range(vma,vma->vm_start,kyuoko3.k_control_base>>0:,
+                                                                      ^
+/usr/src/kernels/3.10.0-327.el7.x86_64/arch/x86/include/asm/pgtable.h:518:30: note: in definition of macro ‘io_remap_pfn_range’
+  remap_pfn_range(vma, vaddr, pfn, size, prot)
+                              ^
+/root/s07/class2/mymod.c:104:70: error: too few arguments to function ‘remap_pfn_range’
+  ret = io_remap_pfn_range(vma,vma->vm_start,kyuoko3.k_control_base>>0:,
+                                                                      ^
+/usr/src/kernels/3.10.0-327.el7.x86_64/arch/x86/include/asm/pgtable.h:518:30: note: in definition of macro ‘io_remap_pfn_range’
+  remap_pfn_range(vma, vaddr, pfn, size, prot)
+                              ^
+In file included from /usr/src/kernels/3.10.0-327.el7.x86_64/arch/x86/include/asm/pci.h:4:0,
+                 from include/linux/pci.h:1449,
+                 from /root/s07/class2/mymod.c:7:
+include/linux/mm.h:1941:5: note: declared here
+ int remap_pfn_range(struct vm_area_struct *, unsigned long addr,
+     ^
+In file included from /root/s07/class2/mymod.c:7:0:
+/root/s07/class2/mymod.c: In function ‘my_init_function’:
+include/linux/pci.h:1151:23: warning: ignoring return value of ‘__pci_register_driver’, declared with attribute warn_unused_result [-Wunused-result]
+  __pci_register_driver(driver, THIS_MODULE, KBUILD_MODNAME)
+                       ^
+/root/s07/class2/mymod.c:132:9: note: in expansion of macro ‘pci_register_driver’
+         pci_register_driver(&kyuoko3_pci_drv);
+         ^
+make[2]: *** [/root/s07/class2/mymod.o] Error 1
+make[1]: *** [_module_/root/s07/class2] Error 2
+make[1]: Leaving directory `/usr/src/kernels/3.10.0-327.el7.x86_64'
+make: *** [default] Error 2
