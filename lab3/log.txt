@@ -1,0 +1,28 @@
+make -C /usr/src/linux M=/root/s07/class3 modules
+make[1]: Entering directory `/usr/src/kernels/3.10.0-327.el7.x86_64'
+  CC [M]  /root/s07/class3/mymod.o
+/root/s07/class3/mymod.c: In function ‘kyouko3_open’:
+/root/s07/class3/mymod.c:95:3: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+   unsigned int ram_size = K_READ_REG(DEVICE_RAM);
+   ^
+/root/s07/class3/mymod.c: At top level:
+/root/s07/class3/mymod.c:130:6: warning: function declaration isn’t a prototype [-Wstrict-prototypes]
+ void off_GraphicsMode()
+      ^
+/root/s07/class3/mymod.c: In function ‘on_GraphicsMode’:
+/root/s07/class3/mymod.c:208:8: warning: unused variable ‘one’ [-Wunused-variable]
+  float one = 1.0f, zero = 0.0f;
+        ^
+In file included from /root/s07/class3/mymod.c:9:0:
+/root/s07/class3/mymod.c: In function ‘my_init_function’:
+include/linux/pci.h:1151:23: warning: ignoring return value of ‘__pci_register_driver’, declared with attribute warn_unused_result [-Wunused-result]
+  __pci_register_driver(driver, THIS_MODULE, KBUILD_MODNAME)
+                       ^
+/root/s07/class3/mymod.c:302:9: note: in expansion of macro ‘pci_register_driver’
+         pci_register_driver(&kyouko3_pci_drv);
+         ^
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /root/s07/class3/mymod.mod.o
+  LD [M]  /root/s07/class3/mymod.ko
+make[1]: Leaving directory `/usr/src/kernels/3.10.0-327.el7.x86_64'
