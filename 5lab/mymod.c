@@ -272,6 +272,15 @@ void on_GraphicsMode(void)
 	return;
 }
 
+
+
+irqreturn_t dma_intr_handler(int, void *, struct pt_regs *){
+	
+	irqreturn_t ret;
+	
+	return ret;
+	
+}
 //ioctl methods
 void fifo_vmode(unsigned int iG_Mode)
 {
@@ -295,6 +304,7 @@ long fifo_queue(unsigned int cmd, unsigned long arg){
 	return ret;
 }
 
+//ioctl bind_dma
 int bind_dma(unsigned long *oUsrAddr){
 	
 	int ret = 0;
@@ -321,27 +331,50 @@ int bind_dma(unsigned long *oUsrAddr){
 		
 	}
 	
+	ret = pci_enable_device(kyouko3.pciDevice);
+	if(ret)
+		printk(KERN_ALERT "kyouko3 device could not be enabled\n");
+	
 	
 	//2. Configure the Interrupt handler by using request_irq
+	
+	ret = request_irq(	kyouko3.pciDevice->irq,
+						(irq_handler_t)&dma_intr_handler,
+						IRQF_SHARED,
+						"dma_intr_handler",
+						&kyouko3);
+	if(ret){
+		pci_disable_device(kyouko3.pciDevice);
+		printk(KERN_ALERT "request_irq failed\n");
+		return -EIO;
+	}
 	//3. Set INTERRUPT_SET register to value 0x02
+	K_WRITE_REG(INTERRUPT_SET,0x02);
 	
 	//assign oUsrAddr with the address of first index buffer
+	oUsrAddr = copy_to_user(	*oUsrAddr,dma_buffs[0].kv_base,
+								sizeof(dma_buffs[0].kv_base));
 	
-	return 0;
+	return ret;
 }
 
 
 int ubind_dma(){
 	
 	int ret = 0;
+	int i = 0;
 	//Free the Buffers that is allocated.
+	for( i =0; i<NUM_BUFF; i++){
+		pci_free_consistent(kyouko3.pciDevice,124*1024,
+			 dma[i].kv_base,dma[i].p_base);
+	}
 	return ret;
 	
 }
 
 void initiate_transfer(unsigned int iCnt){
 	
-	/*Here we will tranfer the iCnt number of bytes of commands to the 
+	/*Here we will transfer the iCnt number of bytes of commands to the 
 	buffer. This will increment the fill counter of the buffer queue.*/
 	
 	
