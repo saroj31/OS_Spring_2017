@@ -9,6 +9,8 @@
 #include <linux/pci.h>
 #include <linux/delay.h>
 #include <asm/pgtable.h>
+#include <asm/mman.h>
+
 
 //macro declarations
 #define NUM_BUFF 8
@@ -274,7 +276,7 @@ void on_GraphicsMode(void)
 
 
 
-irqreturn_t dma_intr_handler(int, void *, struct pt_regs *){
+irqreturn_t dma_intr_handler(int i, void *addr, struct pt_regs *reg){
 	
 	irqreturn_t ret;
 	
@@ -311,22 +313,22 @@ int bind_dma(unsigned long *oUsrAddr){
 	int i = 0;
 	unsigned long addr;
 	
-    FILE *fp = NULL;  //Keeping it NULL
+    //FILE *fp;  //Keeping it NULL
 	
 	//Allocation of memory for 8 buffers
 	//1. Memory allocation for the Buffer and set oUsrAddr
-	for(i =0 i < 8; i++){
+	for(i =0; i < 8; i++){
 		kyouko3.fill = i;
 		//We get Physical address and Kernel virtual address
-		dma_buffs[i].phy_base = pci_alloc_consistent( kyouko3.pciDevice,
+		dma_buffs[i].kv_base = pci_alloc_consistent( kyouko3.pciDevice,
 						NUM_BUFF*124*1024,
-						&dma_buffs[i].kv_base);
+						&dma_buffs[i].phy_base);
 						
 		
 		//offset is other than 0 and 0x8000 00000				
-		addr = vm_mmap(	fp, 0,
-						NUM_BUFF*124*1024, PROT_READ|PROT_WRITE,
-						MAP_SHARED, 0x1 ); 
+		addr = vm_mmap(	0, 0,
+				NUM_BUFF*124*1024, PROT_READ | PROT_WRITE,
+				MAP_SHARED, 0x1 ); 
 		
 		
 	}
@@ -366,7 +368,7 @@ int ubind_dma(){
 	//Free the Buffers that is allocated.
 	for( i =0; i<NUM_BUFF; i++){
 		pci_free_consistent(kyouko3.pciDevice,124*1024,
-			 dma[i].kv_base,dma[i].p_base);
+			 dma_buffs[i].kv_base,dma_buffs[i].phy_base);
 	}
 	return ret;
 	
@@ -378,7 +380,7 @@ void initiate_transfer(unsigned int iCnt){
 	buffer. This will increment the fill counter of the buffer queue.*/
 	
 	
-	return.
+	return;
 	
 }
 
